@@ -13,287 +13,289 @@ var stream = require('stream');
 
 var _documentCurrentScript = typeof document !== 'undefined' ? document.currentScript : null;
 const kColors = [
-    '#000000',		// 0
-    '#ffffff',		// 1
-    '#4c4c4c',		// 2
-    '#808080',		// 3
-    '#999999',		// 4
-    '#c0c0c0',		// 5
-    '#cccccc',		// 6
-    '#e5e5e5',		// 7
-    '#f2f2f2',		// 8
-    '#008000',		// 9
-    '#00ff00',		// 10
-    '#bfffa0',		// 11
-    '#ffd629',		// 12
-    '#ff99cc',		// 13
-    '#004080',		// 14
-    '#9fc0e1',		// 15
-    '#5580ff',		// 16
-    '#a9c9fa',		// 17
-    '#ff0080',		// 18
-    '#800080',		// 19
-    '#ffbfff',		// 20
-    '#e45b21',		// 21
-    '#ffbfaa',		// 22
-    '#008080',		// 23
-    '#ff0000',		// 24
-    '#fdc59f',		// 25
-    '#808000',		// 26
-    '#bfbf00',		// 27
-    '#824100',		// 28
-    '#007256',		// 29
-    '#008000',		// 30
-    '#000080',		// Last + 1
-    '#008080',		// Last + 2
-    '#800080',		// Last + 3
-    '#ff0000',		// Last + 4
-    '#0000ff',		// Last + 5
-    '#008000'		// Last + 6
+   '#000000',		// 0
+   '#ffffff',		// 1
+   '#4c4c4c',		// 2
+   '#808080',		// 3
+   '#999999',		// 4
+   '#c0c0c0',		// 5
+   '#cccccc',		// 6
+   '#e5e5e5',		// 7
+   '#f2f2f2',		// 8
+   '#008000',		// 9
+   '#00ff00',		// 10
+   '#bfffa0',		// 11
+   '#ffd629',		// 12
+   '#ff99cc',		// 13
+   '#004080',		// 14
+   '#9fc0e1',		// 15
+   '#5580ff',		// 16
+   '#a9c9fa',		// 17
+   '#ff0080',		// 18
+   '#800080',		// 19
+   '#ffbfff',		// 20
+   '#e45b21',		// 21
+   '#ffbfaa',		// 22
+   '#008080',		// 23
+   '#ff0000',		// 24
+   '#fdc59f',		// 25
+   '#808000',		// 26
+   '#bfbf00',		// 27
+   '#824100',		// 28
+   '#007256',		// 29
+   '#008000',		// 30
+   '#000080',		// Last + 1
+   '#008080',		// Last + 2
+   '#800080',		// Last + 3
+   '#ff0000',		// Last + 4
+   '#0000ff',		// Last + 5
+   '#008000'		// Last + 6
 ];
 
 const kFontFaces = [
-    "quicktype,arial,helvetica,sans-serif",							// 00 - QuickType - sans-serif variable font
-    "quicktype condensed,arial narrow,arial,helvetica,sans-serif",	// 01 - QuickType Condensed - thin sans-serif variable font
-    "quicktypepi,quicktypeiipi",									// 02 - QuickType Pi
-    "quicktype mono,courier new,courier,monospace",					// 03 - QuickType Mono - san-serif fixed font
-    "ocr-a,courier new,courier,monospace",							// 04 - OCR-A - OCR readable san-serif fixed font
-    "ocr b mt,courier new,courier,monospace"						// 05 - OCR-B MT - OCR readable san-serif fixed font
- ];
+   "quicktype,arial,helvetica,sans-serif",							// 00 - QuickType - sans-serif variable font
+   "quicktype condensed,arial narrow,arial,helvetica,sans-serif",	// 01 - QuickType Condensed - thin sans-serif variable font
+   "quicktypepi,quicktypeiipi",									// 02 - QuickType Pi
+   "quicktype mono,courier new,courier,monospace",					// 03 - QuickType Mono - san-serif fixed font
+   "ocr-a,courier new,courier,monospace",							// 04 - OCR-A - OCR readable san-serif fixed font
+   "ocr b mt,courier new,courier,monospace"						// 05 - OCR-B MT - OCR readable san-serif fixed font
+];
 
- const kFontStyles = [
-    // Face		Size	Bold	Italic		StyleID(Comment)
-    // -----	----	----	-----		-----------------
-        [0,		6,		0,		0],			//00
-        [0,		8,		0,		0],			//01
-        [0,		10,		0,		0],			//02
-        [0,		12,		0,		0],			//03
-        [0,		14,		0,		0],			//04
-        [0,		18,		0,		0],			//05
-        [0,		6,		1,		0],			//06
-        [0,		8,		1,		0],			//07
-        [0,		10,		1,		0],			//08
-        [0,		12,		1,		0],			//09
-        [0,		14,		1,		0],			//10
-        [0,		18,		1,		0],			//11
-        [0,		6,		0,		1],			//12
-        [0,		8,		0,		1],			//13
-        [0,		10,		0,		1],			//14
-        [0,		12,		0,		1],			//15
-        [0,		14,		0,		1],			//16
-        [0,		18,		0,		1],			//17
-        [0,		6,		1,		1],			//18
-        [0,		8,		1,		1],			//19
-        [0,		10,		1,		1],			//20
-        [0,		12,		1,		1],			//21
-        [0,		14,		1,		1],			//22
-        [0,		18,		1,		1],			//23
-        [1,		6,		0,		0],			//24
-        [1,		8,		0,		0],			//25
-        [1,		10,		0,		0],			//26
-        [1,		12,		0,		0],			//27
-        [1,		14,		0,		0],			//28
-        [1,		18,		0,		0],			//29
-        [1,		6,		1,		0],			//30
-        [1,		8,		1,		0],			//31
-        [1,		10,		1,		0],			//32
-        [1,		12,		1,		0],			//33
-        [1,		14,		1,		0],			//34
-        [1,		18,		1,		0],			//35
-        [1,		6,		0,		1],			//36
-        [1,		8,		0,		1],			//37
-        [1,		10,		0,		1],			//38
-        [1,		12,		0,		1],			//39
-        [1,		14,		0,		1],			//40
-        [1,		18,		0,		1],			//41
-        [2,		8,		0,		0],			//42
-        [2,		10,		0,		0],			//43
-        [2,		12,		0,		0],			//44
-        [2,		14,		0,		0],			//45
-        [2,		18,		0,		0],			//46
-        [3,		8,		0,		0],			//47
-        [3,		10,		0,		0],			//48
-        [3,		12,		0,		0],			//49
-        [4,		12,		0,		0],			//50
-        [0,		9,		0,		0],			//51
-        [0,		9,		1,		0],			//52
-        [0,		9,		0,		1],			//53
-        [0,		9,		1,		1],			//54
-        [1,		9,		0,		0],			//55
-        [1,		9,		1,		0],			//56
-        [1,		9,		1,		1],			//57
-        [4,		10,		0,		0],			//58
-        [5,		10,		0,		0],			//59
-        [5,		12,		0,		0]			//60
+const kFontStyles = [
+   // Face		Size	Bold	Italic		StyleID(Comment)
+   // -----	----	----	-----		-----------------
+   [0, 6, 0, 0],			//00
+   [0, 8, 0, 0],			//01
+   [0, 10, 0, 0],			//02
+   [0, 12, 0, 0],			//03
+   [0, 14, 0, 0],			//04
+   [0, 18, 0, 0],			//05
+   [0, 6, 1, 0],			//06
+   [0, 8, 1, 0],			//07
+   [0, 10, 1, 0],			//08
+   [0, 12, 1, 0],			//09
+   [0, 14, 1, 0],			//10
+   [0, 18, 1, 0],			//11
+   [0, 6, 0, 1],			//12
+   [0, 8, 0, 1],			//13
+   [0, 10, 0, 1],			//14
+   [0, 12, 0, 1],			//15
+   [0, 14, 0, 1],			//16
+   [0, 18, 0, 1],			//17
+   [0, 6, 1, 1],			//18
+   [0, 8, 1, 1],			//19
+   [0, 10, 1, 1],			//20
+   [0, 12, 1, 1],			//21
+   [0, 14, 1, 1],			//22
+   [0, 18, 1, 1],			//23
+   [1, 6, 0, 0],			//24
+   [1, 8, 0, 0],			//25
+   [1, 10, 0, 0],			//26
+   [1, 12, 0, 0],			//27
+   [1, 14, 0, 0],			//28
+   [1, 18, 0, 0],			//29
+   [1, 6, 1, 0],			//30
+   [1, 8, 1, 0],			//31
+   [1, 10, 1, 0],			//32
+   [1, 12, 1, 0],			//33
+   [1, 14, 1, 0],			//34
+   [1, 18, 1, 0],			//35
+   [1, 6, 0, 1],			//36
+   [1, 8, 0, 1],			//37
+   [1, 10, 0, 1],			//38
+   [1, 12, 0, 1],			//39
+   [1, 14, 0, 1],			//40
+   [1, 18, 0, 1],			//41
+   [2, 8, 0, 0],			//42
+   [2, 10, 0, 0],			//43
+   [2, 12, 0, 0],			//44
+   [2, 14, 0, 0],			//45
+   [2, 18, 0, 0],			//46
+   [3, 8, 0, 0],			//47
+   [3, 10, 0, 0],			//48
+   [3, 12, 0, 0],			//49
+   [4, 12, 0, 0],			//50
+   [0, 9, 0, 0],			//51
+   [0, 9, 1, 0],			//52
+   [0, 9, 0, 1],			//53
+   [0, 9, 1, 1],			//54
+   [1, 9, 0, 0],			//55
+   [1, 9, 1, 0],			//56
+   [1, 9, 1, 1],			//57
+   [4, 10, 0, 0],			//58
+   [5, 10, 0, 0],			//59
+   [5, 12, 0, 0]			//60
 ];
 
 const dpi = 96.0;
 const gridXPerInch = 4.0;
 const gridYPerInch = 4.0;
 
-const _pixelXPerGrid = dpi/gridXPerInch;
-const _pixelYPerGrid = dpi/gridYPerInch;
-const _pixelPerPoint = dpi/72;
-    
+const _pixelXPerGrid = dpi / gridXPerInch;
+const _pixelYPerGrid = dpi / gridYPerInch;
+const _pixelPerPoint = dpi / 72;
+
 class PDFUnit {
-    static toFixedFloat(fNum) {
-        return parseFloat(fNum.toFixed(3));
-    }
+   static toFixedFloat(fNum) {
+      return parseFloat(fNum.toFixed(3));
+   }
 
-    static colorCount() {
-        return kColors.length;
-    }
+   static colorCount() {
+      return kColors.length;
+   }
 
-    static toPixelX(formX) {
-        return Math.round(formX * _pixelXPerGrid);
-    }
+   static toPixelX(formX) {
+      return Math.round(formX * _pixelXPerGrid);
+   }
 
-    static toPixelY(formY) {
-        return Math.round(formY * _pixelYPerGrid);
-    }
+   static toPixelY(formY) {
+      return Math.round(formY * _pixelYPerGrid);
+   }
 
-    static pointToPixel(point) {// Point unit (1/72 an inch) to pixel units
-        return point * _pixelPerPoint;
-    }
+   static pointToPixel(point) {// Point unit (1/72 an inch) to pixel units
+      return point * _pixelPerPoint;
+   }
 
-    static getColorByIndex(clrId) {
-        return kColors[clrId];
-    }
+   static getColorByIndex(clrId) {
+      return kColors[clrId];
+   }
 
-    static toFormPoint(viewportX, viewportY) {
-        return [(viewportX / _pixelXPerGrid), (viewportY / _pixelYPerGrid)];
-    }
+   static toFormPoint(viewportX, viewportY) {
+      return [(viewportX / _pixelXPerGrid), (viewportY / _pixelYPerGrid)];
+   }
 
-    static toFormX(viewportX) {
-        return PDFUnit.toFixedFloat(viewportX / _pixelXPerGrid);
-    }
+   static toFormX(viewportX) {
+      return PDFUnit.toFixedFloat(viewportX / _pixelXPerGrid);
+   }
 
-    static toFormY(viewportY) {
-        return PDFUnit.toFixedFloat(viewportY / _pixelYPerGrid);
-    }
+   static toFormY(viewportY) {
+      return PDFUnit.toFixedFloat(viewportY / _pixelYPerGrid);
+   }
 
-    static findColorIndex(color) {
-        if (color.length === 4)
-            color += "000";
-        //MQZ. 07/29/2013: if color is not in dictionary, just return -1. The caller (pdffont, pdffill) will set the actual color
-        return kColors.indexOf(color);
-    }
+   static findColorIndex(color) {
+      if (color.length === 4)
+         color += "000";
+      //MQZ. 07/29/2013: if color is not in dictionary, just return -1. The caller (pdffont, pdffill) will set the actual color
+      return kColors.indexOf(color);
+   }
 
-    static dateToIso8601(date) {
-        // PDF spec p.160
-        if (date.slice(0, 2) === 'D:') { // D: prefix is optional
-            date = date.slice(2);
-        }
-        let tz = 'Z';
-        let idx = date.search(/[Z+-]/); // timezone is optional
-        if (idx >= 0) {
-            tz = date.slice(idx);
-            if (tz !== 'Z') { // timezone format OHH'mm'
-                tz = tz.slice(0, 3) + ':' + tz.slice(4, 6);
-            }
-            date = date.slice(0, idx);
-        }
-        let yr = date.slice(0, 4); // everything after year is optional
-        let mth = date.slice(4, 6) || '01';
-        let day = date.slice(6, 8) || '01';
-        let hr = date.slice(8, 10) || '00';
-        let min = date.slice(10, 12) || '00';
-        let sec = date.slice(12, 14) || '00';
-        return yr + '-' + mth + '-' + day + 'T' + hr + ':' + min + ':' + sec + tz;
-    }
+   static dateToIso8601(date) {
+      // PDF spec p.160
+      if (date.slice(0, 2) === 'D:') { // D: prefix is optional
+         date = date.slice(2);
+      }
+      let tz = 'Z';
+      let idx = date.search(/[Z+-]/); // timezone is optional
+      if (idx >= 0) {
+         tz = date.slice(idx);
+         if (tz !== 'Z') { // timezone format OHH'mm'
+            tz = tz.slice(0, 3) + ':' + tz.slice(4, 6);
+         }
+         date = date.slice(0, idx);
+      }
+      let yr = date.slice(0, 4); // everything after year is optional
+      let mth = date.slice(4, 6) || '01';
+      let day = date.slice(6, 8) || '01';
+      let hr = date.slice(8, 10) || '00';
+      let min = date.slice(10, 12) || '00';
+      let sec = date.slice(12, 14) || '00';
+      return yr + '-' + mth + '-' + day + 'T' + hr + ':' + min + ':' + sec + tz;
+   }
 }
 
 class PDFLine {
-    constructor(x1, y1, x2, y2, lineWidth, color, dashed) {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2;
-        this.y2 = y2;
-        this.lineWidth = lineWidth || 1.0;
-        this.color = color;
-        this.dashed = dashed;
-    }
+   constructor(x1, y1, x2, y2, lineWidth, color, dashed) {
+      this.x1 = x1;
+      this.y1 = y1;
+      this.x2 = x2;
+      this.y2 = y2;
+      this.lineWidth = lineWidth || 1.0;
+      this.color = color;
+      this.dashed = dashed;
+   }
 
-    #setStartPoint(oneLine, x, y) {
-        oneLine.x = PDFUnit.toFormX(x);
-        oneLine.y = PDFUnit.toFormY(y);
-    }
+   #setStartPoint(oneLine, x, y) {
+      oneLine.x = PDFUnit.toFormX(x);
+      oneLine.y = PDFUnit.toFormY(y);
+   }
 
-    processLine(targetData) {
-        const xDelta = Math.abs(this.x2 - this.x1);
-        const yDelta = Math.abs(this.y2 - this.y1);
-        const minDelta = this.lineWidth;
+   processLine(targetData) {
+      const xDelta = Math.abs(this.x2 - this.x1);
+      const yDelta = Math.abs(this.y2 - this.y1);
+      const minDelta = this.lineWidth;
 
-        let oneLine = {x:0, y:0, w: PDFUnit.toFixedFloat(this.lineWidth), l:0};
+      let oneLine = { x: 0, y: 0, w: PDFUnit.toFixedFloat(this.lineWidth), l: 0 };
 
-        //MQZ Aug.28.2013, adding color support, using color dictionary and default to black
-        const clrId = PDFUnit.findColorIndex(this.color);
-        const colorObj = (clrId > 0 && clrId < PDFUnit.colorCount()) ? {clr: clrId} : {oc: this.color};
-        oneLine = {...oneLine, ...colorObj};
+      //MQZ Aug.28.2013, adding color support, using color dictionary and default to black
+      const clrId = PDFUnit.findColorIndex(this.color);
+      const colorObj = (clrId > 0 && clrId < PDFUnit.colorCount()) ? { clr: clrId } : { oc: this.color };
+      oneLine = { ...oneLine, ...colorObj };
 
-        //MQZ Aug.29 dashed line support
-        if (this.dashed) {
-            oneLine = oneLine = {...oneLine, dsh: 1};
-        }
+      //MQZ Aug.29 dashed line support
+      if (this.dashed) {
+         oneLine = oneLine = { ...oneLine, dsh: 1 };
+      }
 
-        if ((yDelta < this.lineWidth) && (xDelta > minDelta)) { //HLine
-            if (this.lineWidth < 4 && (xDelta / this.lineWidth < 4)) {
-                nodeUtil.p2jinfo("Skipped: short thick HLine: lineWidth = " + this.lineWidth + ", xDelta = " + xDelta);
-                return; //skip short thick lines, like PA SPP lines behinds checkbox
-            }
+      if ((yDelta < this.lineWidth) && (xDelta > minDelta)) { //HLine
+         if (this.lineWidth < 4 && (xDelta / this.lineWidth < 4)) {
+            nodeUtil.p2jinfo("Skipped: short thick HLine: lineWidth = " + this.lineWidth + ", xDelta = " + xDelta);
+            return; //skip short thick lines, like PA SPP lines behinds checkbox
+         }
 
-            oneLine.l = PDFUnit.toFormX(xDelta);
-            if (this.x1 > this.x2)
-                this.#setStartPoint(oneLine, this.x2, this.y2);
-            else
-                this.#setStartPoint(oneLine, this.x1, this.y1);
-            targetData.HLines.push(oneLine);
-        }
-        else if ((xDelta < this.lineWidth) && (yDelta > minDelta)) {//VLine
-            if (this.lineWidth < 4 && (yDelta / this.lineWidth < 4)) {
-                nodeUtil.p2jinfo("Skipped: short thick VLine: lineWidth = " + this.lineWidth + ", yDelta = " + yDelta);
-                return; //skip short think lines, like PA SPP lines behinds checkbox
-            }
+         oneLine.l = PDFUnit.toFormX(xDelta);
+         if (this.x1 > this.x2)
+            this.#setStartPoint(oneLine, this.x2, this.y2);
+         else
+            this.#setStartPoint(oneLine, this.x1, this.y1);
+         targetData.HLines.push(oneLine);
+      }
+      else if ((xDelta < this.lineWidth) && (yDelta > minDelta)) {//VLine
+         if (this.lineWidth < 4 && (yDelta / this.lineWidth < 4)) {
+            nodeUtil.p2jinfo("Skipped: short thick VLine: lineWidth = " + this.lineWidth + ", yDelta = " + yDelta);
+            return; //skip short think lines, like PA SPP lines behinds checkbox
+         }
 
-            oneLine.l = PDFUnit.toFormY(yDelta);
-            if (this.y1 > this.y2)
-                this.#setStartPoint(oneLine, this.x2, this.y2);
-            else
-                this.#setStartPoint(oneLine, this.x1, this.y1);
-            targetData.VLines.push(oneLine);
-        }
-    }
+         oneLine.l = PDFUnit.toFormY(yDelta);
+         if (this.y1 > this.y2)
+            this.#setStartPoint(oneLine, this.x2, this.y2);
+         else
+            this.#setStartPoint(oneLine, this.x1, this.y1);
+         targetData.VLines.push(oneLine);
+      }
+   }
 }
 
-class PDFFill{
-    // constructor
-    constructor(x, y, width, height, color) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.color = color;
-    }
+class PDFFill {
+   // constructor
+   constructor(x, y, width, height, color) {
+      this.x = x;
+      this.y = y;
+      this.width = width;
+      this.height = height;
+      this.color = color;
+   }
 
-    processFill(targetData) {
-        //MQZ.07/29/2013: when color is not in color dictionary, set the original color (oc)
-        const clrId = PDFUnit.findColorIndex(this.color);
-        const colorObj = (clrId > 0 && clrId < PDFUnit.colorCount()) ? {clr: clrId} : {oc: this.color};
+   processFill(targetData) {
+      //MQZ.07/29/2013: when color is not in color dictionary, set the original color (oc)
+      const clrId = PDFUnit.findColorIndex(this.color);
+      const colorObj = (clrId > 0 && clrId < PDFUnit.colorCount()) ? { clr: clrId } : { oc: this.color };
 
-        const oneFill = {x:PDFUnit.toFormX(this.x),
-                       y:PDFUnit.toFormY(this.y),
-                       w:PDFUnit.toFormX(this.width),
-                       h:PDFUnit.toFormY(this.height),
-                       ...colorObj};
+      const oneFill = {
+         x: PDFUnit.toFormX(this.x),
+         y: PDFUnit.toFormY(this.y),
+         w: PDFUnit.toFormX(this.width),
+         h: PDFUnit.toFormY(this.height),
+         ...colorObj
+      };
 
-        
-        if (oneFill.w < 2 && oneFill.h < 2) {
-            nodeUtil.p2jinfo("Skipped: tiny fill: " + oneFill.w + " x " + oneFill.h);
-            return; //skip short thick lines, like PA SPP lines behinds checkbox
-        }
 
-        targetData.Fills.push(oneFill);
-    }
+      if (oneFill.w < 2 && oneFill.h < 2) {
+         nodeUtil.p2jinfo("Skipped: tiny fill: " + oneFill.w + " x " + oneFill.h);
+         return; //skip short thick lines, like PA SPP lines behinds checkbox
+      }
+
+      targetData.Fills.push(oneFill);
+   }
 }
 
 const _boldSubNames = ['bd', 'bold', 'demi', 'black'];
@@ -585,14 +587,14 @@ class PDFFont {
          default:
             nodeUtil.p2jinfo(
                this.fontObj.type +
-                  ' - SymbolicFont - (' +
-                  this.fontObj.name +
-                  ') : ' +
-                  str.charCodeAt(0) +
-                  '::' +
-                  str.charCodeAt(1) +
-                  ' => ' +
-                  retVal
+               ' - SymbolicFont - (' +
+               this.fontObj.name +
+               ') : ' +
+               str.charCodeAt(0) +
+               '::' +
+               str.charCodeAt(1) +
+               ' => ' +
+               retVal
             );
       }
 
@@ -817,7 +819,7 @@ function setM(ctx, m, updateLineScale) {
 }
 
 class CanvasPattern_ {
-   constructor() {}
+   constructor() { }
 }
 
 // Gradient / Pattern Stubs
@@ -1314,390 +1316,390 @@ const kFBARequired = 0x00000010; // indicates the field is required
 const kMinHeight = 20;
 
 class PDFField {
-    static tabIndex = 0;
+   static tabIndex = 0;
 
-    static isWidgetSupported(field) {
-        let retVal = false;
+   static isWidgetSupported(field) {
+      let retVal = false;
 
-        switch(field.fieldType) {
-            case 'Tx': retVal = true; break; //text input
-            case 'Btn':
-                if (field.fieldFlags & 32768) {
-                    field.fieldType = 'Rd'; //radio button
-                }
-                else if (field.fieldFlags & 65536) {
-                    field.fieldType = 'Btn'; //push button
-                }
-                else {
-                    field.fieldType = 'Cb'; //checkbox
-                }
-                retVal = true;
-                break;
-            case 'Ch': retVal = true; break; //drop down
-            case 'Sig': retVal = true; break; //signature
-            default:
-                nodeUtil.p2jwarn("Unsupported: field.fieldType of " + field.fieldType);
-                break;
-        }
-
-        return retVal;
-    }
-
-    static isFormElement(field) {
-        let retVal = false;
-        switch(field.subtype) {
-            case 'Widget': retVal = PDFField.isWidgetSupported(field); break;
-            default:
-                nodeUtil.p2jwarn("Unsupported: field.type of " + field.subtype);
-                break;
-        }
-        return retVal;
-    }
-
-    // constructor
-    constructor(field, viewport, Fields, Boxsets) {
-        this.field = field;
-        this.viewport = viewport;
-        this.Fields = Fields;
-        this.Boxsets = Boxsets;
-    }
-
-    // Normalize rectangle rect=[x1, y1, x2, y2] so that (x1,y1) < (x2,y2)
-    // For coordinate systems whose origin lies in the bottom-left, this
-    // means normalization to (BL,TR) ordering. For systems with origin in the
-    // top-left, this means (TL,BR) ordering.
-    static #normalizeRect(rect) {
-        const r = rect.slice(0); // clone rect
-        if (rect[0] > rect[2]) {
-            r[0] = rect[2];
-            r[2] = rect[0];
-        }
-        if (rect[1] > rect[3]) {
-            r[1] = rect[3];
-            r[3] = rect[1];
-        }
-        return r;
-    }
-
-    #getFieldPosition(field) {
-        let viewPort = this.viewport;
-        let fieldRect = viewPort.convertToViewportRectangle(field.rect);
-        let rect = PDFField.#normalizeRect(fieldRect);
-
-        let height = rect[3] - rect[1];
-        if (field.fieldType === 'Tx') {
-            if (height > kMinHeight + 2) {
-                rect[1] += 2;
-                height -= 2;
+      switch (field.fieldType) {
+         case 'Tx': retVal = true; break; //text input
+         case 'Btn':
+            if (field.fieldFlags & 32768) {
+               field.fieldType = 'Rd'; //radio button
             }
-        }
-        else if (field.fieldType !== 'Ch') { //checkbox, radio button, and link button
-            rect[1] -= 3;
-        }
-
-        height = (height >= kMinHeight) ? height : kMinHeight;
-
-        return {
-            x: PDFUnit.toFormX(rect[0]),
-            y: PDFUnit.toFormY(rect[1]),
-            w: PDFUnit.toFormX(rect[2] - rect[0]),
-            h: PDFUnit.toFormY(height)
-        };
-    }
-
-    #getFieldBaseData(field) {
-        let attributeMask = 0;
-        //PDF Spec p.676 TABLE 8.70 Field flags common to all field types
-        if (field.fieldFlags & 0x00000001) {
-            attributeMask |= kFBANotOverridable;
-        }
-        if (field.fieldFlags & 0x00000002) {
-            attributeMask |= kFBARequired;
-        }
-
-        let anData = {
-            id: { Id: field.fullName, EN: 0},
-            TI: field.TI,
-            AM: attributeMask
-        };
-        //PDF Spec p.675: add TU (AlternativeText) fields to provide accessibility info
-        if (field.alternativeText && field.alternativeText.length > 1) {
-            anData.TU = field.alternativeText;
-        }
-
-        if (field.alternativeID && field.alternativeID.length > 1) {
-            anData.TM = field.alternativeID;
-        }
-
-        return Object.assign(anData, this.#getFieldPosition(field));
-    }
-
-    #addAlpha(field) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: field.TName || "alpha",
-                TypeInfo: {}
+            else if (field.fieldFlags & 65536) {
+               field.fieldType = 'Btn'; //push button
             }
-        }, this.#getFieldBaseData(field));
-
-        if (field.MV) { //field attributes: arbitrary mask value
-            anData.MV = field.MV;
-        }
-        if (field.fieldValue) {
-            anData.V = field.fieldValue; //read-only field value, like "self-prepared"
-        }
-
-        this.Fields.push(anData);
-    }
-
-    #addCheckBox(box) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: "box",
-                TypeInfo: {}
+            else {
+               field.fieldType = 'Cb'; //checkbox
             }
-        }, this.#getFieldBaseData(box));
-        if(box.fieldValue) {
-            anData.checked = box.fieldValue !== 'Off';
-          }
+            retVal = true;
+            break;
+         case 'Ch': retVal = true; break; //drop down
+         case 'Sig': retVal = true; break; //signature
+         default:
+            nodeUtil.p2jwarn("Unsupported: field.fieldType of " + field.fieldType);
+            break;
+      }
 
-        this.Boxsets.push({boxes:[anData]});
-    }
+      return retVal;
+   }
 
-    #addRadioButton(box) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: "box",
-                TypeInfo: {}
+   static isFormElement(field) {
+      let retVal = false;
+      switch (field.subtype) {
+         case 'Widget': retVal = PDFField.isWidgetSupported(field); break;
+         default:
+            nodeUtil.p2jwarn("Unsupported: field.type of " + field.subtype);
+            break;
+      }
+      return retVal;
+   }
+
+   // constructor
+   constructor(field, viewport, Fields, Boxsets) {
+      this.field = field;
+      this.viewport = viewport;
+      this.Fields = Fields;
+      this.Boxsets = Boxsets;
+   }
+
+   // Normalize rectangle rect=[x1, y1, x2, y2] so that (x1,y1) < (x2,y2)
+   // For coordinate systems whose origin lies in the bottom-left, this
+   // means normalization to (BL,TR) ordering. For systems with origin in the
+   // top-left, this means (TL,BR) ordering.
+   static #normalizeRect(rect) {
+      const r = rect.slice(0); // clone rect
+      if (rect[0] > rect[2]) {
+         r[0] = rect[2];
+         r[2] = rect[0];
+      }
+      if (rect[1] > rect[3]) {
+         r[1] = rect[3];
+         r[3] = rect[1];
+      }
+      return r;
+   }
+
+   #getFieldPosition(field) {
+      let viewPort = this.viewport;
+      let fieldRect = viewPort.convertToViewportRectangle(field.rect);
+      let rect = PDFField.#normalizeRect(fieldRect);
+
+      let height = rect[3] - rect[1];
+      if (field.fieldType === 'Tx') {
+         if (height > kMinHeight + 2) {
+            rect[1] += 2;
+            height -= 2;
+         }
+      }
+      else if (field.fieldType !== 'Ch') { //checkbox, radio button, and link button
+         rect[1] -= 3;
+      }
+
+      height = (height >= kMinHeight) ? height : kMinHeight;
+
+      return {
+         x: PDFUnit.toFormX(rect[0]),
+         y: PDFUnit.toFormY(rect[1]),
+         w: PDFUnit.toFormX(rect[2] - rect[0]),
+         h: PDFUnit.toFormY(height)
+      };
+   }
+
+   #getFieldBaseData(field) {
+      let attributeMask = 0;
+      //PDF Spec p.676 TABLE 8.70 Field flags common to all field types
+      if (field.fieldFlags & 0x00000001) {
+         attributeMask |= kFBANotOverridable;
+      }
+      if (field.fieldFlags & 0x00000002) {
+         attributeMask |= kFBARequired;
+      }
+
+      let anData = {
+         id: { Id: field.fullName, EN: 0 },
+         TI: field.TI,
+         AM: attributeMask
+      };
+      //PDF Spec p.675: add TU (AlternativeText) fields to provide accessibility info
+      if (field.alternativeText && field.alternativeText.length > 1) {
+         anData.TU = field.alternativeText;
+      }
+
+      if (field.alternativeID && field.alternativeID.length > 1) {
+         anData.TM = field.alternativeID;
+      }
+
+      return Object.assign(anData, this.#getFieldPosition(field));
+   }
+
+   #addAlpha(field) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: field.TName || "alpha",
+            TypeInfo: {}
+         }
+      }, this.#getFieldBaseData(field));
+
+      if (field.MV) { //field attributes: arbitrary mask value
+         anData.MV = field.MV;
+      }
+      if (field.fieldValue) {
+         anData.V = field.fieldValue; //read-only field value, like "self-prepared"
+      }
+
+      this.Fields.push(anData);
+   }
+
+   #addCheckBox(box) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: "box",
+            TypeInfo: {}
+         }
+      }, this.#getFieldBaseData(box));
+      if (box.fieldValue) {
+         anData.checked = box.fieldValue !== 'Off';
+      }
+
+      this.Boxsets.push({ boxes: [anData] });
+   }
+
+   #addRadioButton(box) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: "box",
+            TypeInfo: {}
+         }
+      }, this.#getFieldBaseData(box));
+
+      anData.id.Id = box.value;
+      if ('checked' in box) {
+         anData.checked = box.checked;
+      }
+
+      const rdGroup = this.Boxsets.filter(boxset => ('id' in boxset) && ('Id' in boxset.id) && (boxset.id.Id === box.fullName))[0];
+      if ((!!rdGroup) && ('boxes' in rdGroup)) {
+         rdGroup.boxes.push(anData);
+      }
+      else {
+         this.Boxsets.push({ boxes: [anData], id: { Id: box.fullName, EN: 0 } });
+      }
+   }
+
+   #addLinkButton(field) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: "link"
+         },
+         FL: {
+            form: { Id: field.FL }
+         }
+      }, this.#getFieldBaseData(field));
+
+      this.Fields.push(anData);
+   }
+
+   #addSelect(field) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: "alpha",
+            TypeInfo: {}
+         }
+      }, this.#getFieldBaseData(field));
+
+      anData.w -= 0.5; //adjust combobox width
+      anData.PL = { V: [], D: [] };
+      field.value.forEach((ele, idx) => {
+         if (Array.isArray(ele)) {
+            anData.PL.D.push(ele[0]);
+            anData.PL.V.push(ele[1]);
+         } else {
+            anData.PL.D.push(ele);
+            anData.PL.V.push(ele);
+         }
+      });
+
+      // add field value to the object 
+      if (field.fieldValue) {
+         anData.V = field.fieldValue;
+      }
+      this.Fields.push(anData);
+   };
+
+   #addSignature(field) {
+      const anData = Object.assign({
+         style: 48,
+         T: {
+            Name: "signature",
+            TypeInfo: {}
+         }
+      }, this.#getFieldBaseData(field));
+
+      if (field.Sig) {
+         anData.Sig = {};
+         if (field.Sig.Name) anData.Sig.Name = field.Sig.Name;
+         if (field.Sig.M) anData.Sig.M = PDFUnit.dateToIso8601(field.Sig.M);
+         if (field.Sig.Location) anData.Sig.Location = field.Sig.Location;
+         if (field.Sig.Reason) anData.Sig.Reason = field.Sig.Reason;
+         if (field.Sig.ContactInfo) anData.Sig.ContactInfo = field.Sig.ContactInfo;
+      }
+
+      this.Fields.push(anData);
+   }
+
+   // public instance methods
+   processField() {
+      this.field.TI = PDFField.tabIndex++;
+
+      switch (this.field.fieldType) {
+         case 'Tx': this.#addAlpha(this.field); break;
+         case 'Cb': this.#addCheckBox(this.field); break;
+         case 'Rd': this.#addRadioButton(this.field); break;
+         case 'Btn': this.#addLinkButton(this.field); break;
+         case 'Ch': this.#addSelect(this.field); break;
+         case 'Sig': this.#addSignature(this.field); break;
+      }
+
+      this.clean();
+   }
+
+   clean() {
+      delete this.field;
+      delete this.viewport;
+      delete this.Fields;
+      delete this.Boxsets;
+   }
+
+   //static public method to generate fieldsType object based on parser result
+   static getAllFieldsTypes(data) {
+      const isFieldReadOnly = field => {
+         return (field.AM & kFBANotOverridable) ? true : false;
+      };
+
+      const getFieldBase = field => {
+         return { id: field.id.Id, type: field.T.Name, calc: isFieldReadOnly(field), value: field.V || "" };
+      };
+
+      let retVal = [];
+      data.Pages.forEach(page => {
+         page.Boxsets.forEach(boxsets => {
+            if (boxsets.boxes.length > 1) { //radio button
+               boxsets.boxes.forEach(box => {
+                  retVal.push({ id: boxsets.id.Id, type: "radio", calc: isFieldReadOnly(box), value: box.id.Id });
+               });
             }
-        }, this.#getFieldBaseData(box));
-
-        anData.id.Id = box.value;
-        if ('checked' in box) {
-            anData.checked = box.checked;
-        }
-
-        const rdGroup = this.Boxsets.filter(boxset => ('id' in boxset) && ('Id' in boxset.id) && (boxset.id.Id === box.fullName))[0];
-        if ((!!rdGroup) && ('boxes' in rdGroup)) {
-            rdGroup.boxes.push(anData);
-        }
-        else {
-            this.Boxsets.push({boxes:[anData], id: { Id: box.fullName, EN: 0}});
-        }
-    }
-
-    #addLinkButton(field) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: "link"
-            },
-            FL: {
-                form: {Id: field.FL}
+            else { //checkbox
+               retVal.push(getFieldBase(boxsets.boxes[0]));
             }
-        }, this.#getFieldBaseData(field));
+         });
 
-        this.Fields.push(anData);
-    }
+         page.Fields.forEach(field => retVal.push(getFieldBase(field)));
 
-    #addSelect(field) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: "alpha",
-                TypeInfo: {}
-            }
-        }, this.#getFieldBaseData(field));
-
-        anData.w -= 0.5; //adjust combobox width
-        anData.PL = {V: [], D: []};
-        field.value.forEach( (ele, idx) => {
-            if (Array.isArray(ele)) {
-                anData.PL.D.push(ele[0]);
-                anData.PL.V.push(ele[1]);
-            } else {
-                anData.PL.D.push(ele);
-                anData.PL.V.push(ele);
-            }
-        });
-		
-		// add field value to the object 
-		if (field.fieldValue) {
-			anData.V = field.fieldValue; 
-		}
-        this.Fields.push(anData);
-    };
-
-    #addSignature(field) {
-        const anData = Object.assign({
-            style: 48,
-            T: {
-                Name: "signature",
-                TypeInfo: {}
-            }
-        }, this.#getFieldBaseData(field));
-
-        if (field.Sig) {
-            anData.Sig = {};
-            if (field.Sig.Name) anData.Sig.Name = field.Sig.Name;
-            if (field.Sig.M) anData.Sig.M = PDFUnit.dateToIso8601(field.Sig.M);
-            if (field.Sig.Location) anData.Sig.Location = field.Sig.Location;
-            if (field.Sig.Reason) anData.Sig.Reason = field.Sig.Reason;
-            if (field.Sig.ContactInfo) anData.Sig.ContactInfo = field.Sig.ContactInfo;
-        }
-
-        this.Fields.push(anData);
-    }
-
-    // public instance methods
-    processField() {
-        this.field.TI = PDFField.tabIndex++;
-
-        switch(this.field.fieldType) {
-            case 'Tx': this.#addAlpha(this.field); break;
-            case 'Cb': this.#addCheckBox(this.field); break;
-            case 'Rd': this.#addRadioButton(this.field);break;
-            case 'Btn':this.#addLinkButton(this.field); break;
-            case 'Ch': this.#addSelect(this.field); break;
-            case 'Sig': this.#addSignature(this.field); break;
-        }
-
-        this.clean();
-    }
-
-    clean() {
-        delete this.field;
-        delete this.viewport;
-        delete this.Fields;
-        delete this.Boxsets;
-    }
-
-    //static public method to generate fieldsType object based on parser result
-    static getAllFieldsTypes(data) {
-        const isFieldReadOnly = field => {
-            return (field.AM & kFBANotOverridable) ? true : false;
-        };
-
-        const getFieldBase = field => {
-            return {id: field.id.Id, type: field.T.Name, calc: isFieldReadOnly(field), value: field.V || ""};
-        };
-
-        let retVal = [];
-        data.Pages.forEach( page => {
-            page.Boxsets.forEach( boxsets => {
-                if (boxsets.boxes.length > 1) { //radio button
-                    boxsets.boxes.forEach( box => {
-                        retVal.push({id: boxsets.id.Id, type: "radio", calc: isFieldReadOnly(box), value: box.id.Id});
-                    });
-                }
-                else { //checkbox
-                    retVal.push(getFieldBase(boxsets.boxes[0]));
-                }
-            });
-
-            page.Fields.forEach(field => retVal.push(getFieldBase(field)));
-            
-        });
-        return retVal;
-    }
+      });
+      return retVal;
+   }
 }
 
 //BEGIN - MQZ 9/19/2012. Helper functions to parse acroForm elements
 function setupRadioButton(annotation, item) {
-    let asName = '';
-    //PDF Spec p.689: parent item's DV holds the item's value that is selected by default
-    let po = annotation.get('Parent');
-    if (po) {
-        po.forEach(function(key, val){
-            if (key === 'DV') {
-                asName = val.name || '';
-            }
-            else if (key === 'TU') {
-                //radio buttons use the alternative text from the parent
-                item.alternativeText = val;
-            } else if( key == 'TM') {
-                item.alternativeID   = val;
-            }
-        });
-    }
+   let asName = '';
+   //PDF Spec p.689: parent item's DV holds the item's value that is selected by default
+   let po = annotation.get('Parent');
+   if (po) {
+      po.forEach(function (key, val) {
+         if (key === 'DV') {
+            asName = val.name || '';
+         }
+         else if (key === 'TU') {
+            //radio buttons use the alternative text from the parent
+            item.alternativeText = val;
+         } else if (key == 'TM') {
+            item.alternativeID = val;
+         }
+      });
+   }
 
-    //PDF Spec p.606: get appearance dictionary
-    let ap = annotation.get('AP');
-    //PDF Spec p.614 get normal appearance
-    let nVal = ap.get('N');
-    //PDF Spec p.689
-    nVal.forEach(function (key, value) {
-        if (key.toLowerCase() != "off") {
-            //value if selected
-            item.value = key; //export value
-            item.checked = (key === asName); //initial selection state
-        }
-    });
+   //PDF Spec p.606: get appearance dictionary
+   let ap = annotation.get('AP');
+   //PDF Spec p.614 get normal appearance
+   let nVal = ap.get('N');
+   //PDF Spec p.689
+   nVal.forEach(function (key, value) {
+      if (key.toLowerCase() != "off") {
+         //value if selected
+         item.value = key; //export value
+         item.checked = (key === asName); //initial selection state
+      }
+   });
 
-    if (!item.value)
-        item.value = "off";
+   if (!item.value)
+      item.value = "off";
 }
 
 function setupPushButton(annotation, item) {
-    //button label: PDF Spec p.640
-    let mk = annotation.get('MK');
-    if(mk) {
-        item.value = mk.get('CA') || '';
-    }
+   //button label: PDF Spec p.640
+   let mk = annotation.get('MK');
+   if (mk) {
+      item.value = mk.get('CA') || '';
+   }
 
-    //button action: url when mouse up: PDF Spec:p.642
-    item.FL = "";
-    let ap = annotation.get('A');
-    if (ap) {
-        let sp = ap.get('S');
-        item.FL = ap.get(sp.name);
-    }
+   //button action: url when mouse up: PDF Spec:p.642
+   item.FL = "";
+   let ap = annotation.get('A');
+   if (ap) {
+      let sp = ap.get('S');
+      item.FL = ap.get(sp.name);
+   }
 }
 
 function setupCheckBox(annotation, item) {
-    //PDF Spec p.606: get appearance dictionary
-    let ap = annotation.get('AP');
-    //PDF Spec p.614 get normal appearance
-    let nVal = ap.get('N');
+   //PDF Spec p.606: get appearance dictionary
+   let ap = annotation.get('AP');
+   //PDF Spec p.614 get normal appearance
+   let nVal = ap.get('N');
 
-    //PDF Spec p.689
-    let i = 0;
-    nVal.forEach(function (key, value) {
-        i++;
-        if (i == 1) //initial selection state
-            item.value = key;
-    });
+   //PDF Spec p.689
+   let i = 0;
+   nVal.forEach(function (key, value) {
+      i++;
+      if (i == 1) //initial selection state
+         item.value = key;
+   });
 }
 
 function setupDropDown(annotation, item) {
-    //PDF Spec p.688
-    item.value = annotation.get('Opt') || [];
+   //PDF Spec p.688
+   item.value = annotation.get('Opt') || [];
 }
 
 function setupFieldAttributes(annotation, item) {
-    //MQZ. Jan.03.2013. additional-actions dictionary
-    //PDF Spec P.648. 8.5.2. Trigger Events
-    let aa = annotation.get('AA');
-    if (!aa) {
-        return;
-    }
+   //MQZ. Jan.03.2013. additional-actions dictionary
+   //PDF Spec P.648. 8.5.2. Trigger Events
+   let aa = annotation.get('AA');
+   if (!aa) {
+      return;
+   }
 
-    //PDF Spec p.651 get format dictionary
-    let nVal = aa.get('F');
-    if (!nVal) {
-        nVal = aa.get('K');
-        if (!nVal)
-            return;
-    }
+   //PDF Spec p.651 get format dictionary
+   let nVal = aa.get('F');
+   if (!nVal) {
+      nVal = aa.get('K');
+      if (!nVal)
+         return;
+   }
 
-    nVal.forEach(function (key, value) {
-        if (key === "JS") {
-            processFieldAttribute(value, item);
-        }
-    });
+   nVal.forEach(function (key, value) {
+      if (key === "JS") {
+         processFieldAttribute(value, item);
+      }
+   });
 }
 
 const AFSpecial_Format = ['zip', 'zip', 'phone', 'ssn', ''];
@@ -1711,200 +1713,200 @@ const AFSpecial_Format = ['zip', 'zip', 'phone', 'ssn', ''];
 //  let AFDate_FormatEx = ["m/d", "m/d/yy", "mm/dd/yy", "mm/yy", "d-mmm", "d-mmm-yy", "dd-mmm-yy", "yymm-dd", "mmm-yy", "mmmm-yy", "mmm d, yyyy", "mmmm d, yyyy", "m/d/yy h:MM tt", "m/d/yy HH:MM"];
 
 function processFieldAttribute(jsFuncName, item) {
-    if (item.hasOwnProperty('TName'))
-        return;
+   if (item.hasOwnProperty('TName'))
+      return;
 
-    if(!jsFuncName.split)
-        return;
+   if (!jsFuncName.split)
+      return;
 
-    let vParts = jsFuncName.split('(');
-    if (vParts.length !== 2)
-        return;
+   let vParts = jsFuncName.split('(');
+   if (vParts.length !== 2)
+      return;
 
-    let funcName = vParts[0];
-    let funcParam = vParts[1].split(')')[0];
+   let funcName = vParts[0];
+   let funcParam = vParts[1].split(')')[0];
 
-    switch (funcName) {
-        case 'AFSpecial_Format':
-            item.TName = AFSpecial_Format[Number(funcParam)];
-            break;
-        case 'AFNumber_Format':
-//              nfs = funcParam.split(',');
-//set the Money fields to use the Number type with no decimal places after, no commas, and bCurrencyPrepend is set as true; (o use a negative sign (fits the PDF layout and our print formatting as well).
-//              if (nfs[0] === '0' && nfs[1] === '1' && nfs[5])
-//                  item.TName = 'money';
-//              else
-            item.TName = 'number';
-            break;
-        case 'AFDate_FormatEx':
-            item.TName = 'date';
-            item.MV = funcParam.replace(/^'+|^"+|'+$|"+$/g,''); //mask value
-            break;
-        case 'AFSpecial_KeystrokeEx': //special format: "arbitrary mask"
-            let maskValue = funcParam.replace(/^'+|^"+|'+$|"+$/g,''); //mask value
-            if ((!!maskValue) && maskValue.length > 0 && maskValue.length < 64) {
-                item.TName = 'mask'; //fixed length input
-                item.MV = maskValue;
-            }
-            break;
-        case 'AFPercent_Format':
-            item.TName = 'percent'; //funcParam => 2, 0, will specified how many decimal places
-            break;
-    }
+   switch (funcName) {
+      case 'AFSpecial_Format':
+         item.TName = AFSpecial_Format[Number(funcParam)];
+         break;
+      case 'AFNumber_Format':
+         //              nfs = funcParam.split(',');
+         //set the Money fields to use the Number type with no decimal places after, no commas, and bCurrencyPrepend is set as true; (o use a negative sign (fits the PDF layout and our print formatting as well).
+         //              if (nfs[0] === '0' && nfs[1] === '1' && nfs[5])
+         //                  item.TName = 'money';
+         //              else
+         item.TName = 'number';
+         break;
+      case 'AFDate_FormatEx':
+         item.TName = 'date';
+         item.MV = funcParam.replace(/^'+|^"+|'+$|"+$/g, ''); //mask value
+         break;
+      case 'AFSpecial_KeystrokeEx': //special format: "arbitrary mask"
+         let maskValue = funcParam.replace(/^'+|^"+|'+$|"+$/g, ''); //mask value
+         if ((!!maskValue) && maskValue.length > 0 && maskValue.length < 64) {
+            item.TName = 'mask'; //fixed length input
+            item.MV = maskValue;
+         }
+         break;
+      case 'AFPercent_Format':
+         item.TName = 'percent'; //funcParam => 2, 0, will specified how many decimal places
+         break;
+   }
 }
 
 function setupSignature(annotation, item) {
-    //PDF Spec p.695: field value is signature dict if signed
-    let sig = annotation.get('V');
-    if (!sig) return;
+   //PDF Spec p.695: field value is signature dict if signed
+   let sig = annotation.get('V');
+   if (!sig) return;
 
-    //PDF Spec p.728: get signature information
-    item.Sig = {};
-    let name = sig.get('Name');
-    if (name) item.Sig.Name = name;
-    let time = sig.get('M');
-    if (time) item.Sig.M = time;
-    let location = sig.get('Location');
-    if (location) item.Sig.Location = location;
-    let reason = sig.get('Reason');
-    if (reason) item.Sig.Reason = reason;
-    let contactInfo = sig.get('ContactInfo');
-    if (contactInfo) item.Sig.ContactInfo = contactInfo;
+   //PDF Spec p.728: get signature information
+   item.Sig = {};
+   let name = sig.get('Name');
+   if (name) item.Sig.Name = name;
+   let time = sig.get('M');
+   if (time) item.Sig.M = time;
+   let location = sig.get('Location');
+   if (location) item.Sig.Location = location;
+   let reason = sig.get('Reason');
+   if (reason) item.Sig.Reason = reason;
+   let contactInfo = sig.get('ContactInfo');
+   if (contactInfo) item.Sig.ContactInfo = contactInfo;
 }
 
 //END - MQZ 9/19/2012. Helper functions to parse acroForm elements
 
 class PDFAnno {
-    static processAnnotation(annotation, item) {
-        if (item.fieldType == 'Btn') { //PDF Spec p.675
-            if (item.fieldFlags & 32768) {
-                setupRadioButton(annotation, item);
-            }
-            else if (item.fieldFlags & 65536) {
-                setupPushButton(annotation, item);
-            }
-            else {
-                setupCheckBox(annotation, item);
-            }
-        }
-        else if (item.fieldType == 'Ch') {
-            setupDropDown(annotation, item);
-        }
-        else if (item.fieldType == 'Tx') {
-            setupFieldAttributes(annotation, item);
-        }
-        else if (item.fieldType === 'Sig') {
-            setupSignature(annotation, item);
-        }
-        else {
-            nodeUtil.p2jwarn("Unknown fieldType: ", item);
-        }
-    }   
+   static processAnnotation(annotation, item) {
+      if (item.fieldType == 'Btn') { //PDF Spec p.675
+         if (item.fieldFlags & 32768) {
+            setupRadioButton(annotation, item);
+         }
+         else if (item.fieldFlags & 65536) {
+            setupPushButton(annotation, item);
+         }
+         else {
+            setupCheckBox(annotation, item);
+         }
+      }
+      else if (item.fieldType == 'Ch') {
+         setupDropDown(annotation, item);
+      }
+      else if (item.fieldType == 'Tx') {
+         setupFieldAttributes(annotation, item);
+      }
+      else if (item.fieldType === 'Sig') {
+         setupSignature(annotation, item);
+      }
+      else {
+         nodeUtil.p2jwarn("Unknown fieldType: ", item);
+      }
+   }
 }
 
 class PDFImage {
-	#_src = '';
-	#_onload = null;
+   #_src = '';
+   #_onload = null;
 
-	set onload(val) {
-		this.#_onload = typeof val === 'function' ? val : null;
-	}
+   set onload(val) {
+      this.#_onload = typeof val === 'function' ? val : null;
+   }
 
-	get onload() {
-		return this.#_onload;
-	}
+   get onload() {
+      return this.#_onload;
+   }
 
-	set src(val) {
-		this.#_src = val;
-		if (this.#_onload) this.#_onload();
-	}
+   set src(val) {
+      this.#_src = val;
+      if (this.#_onload) this.#_onload();
+   }
 
-	get src() {
-		return this.#_src;
-	}
+   get src() {
+      return this.#_src;
+   }
 
-    btoa(val) {
-        if (typeof window === 'undefined') {
-            return (new Buffer.from(val, 'ascii')).toString('base64');
-        }
-        else if (typeof window.btoa === 'function')
-            return window.btoa(val);
+   btoa(val) {
+      if (typeof window === 'undefined') {
+         return (new Buffer.from(val, 'ascii')).toString('base64');
+      }
+      else if (typeof window.btoa === 'function')
+         return window.btoa(val);
 
-        return "";
-    }
+      return "";
+   }
 
 }
 
 class PTIXmlParser {
-    xmlData = null;
-	ptiPageArray = [];
+   xmlData = null;
+   ptiPageArray = [];
 
-	// constructor
-	constructor() {
-        this.xmlData = null;
-        this.ptiPageArray = [];
-    }
-	
-	parseXml(filePath, callback) {
-		fs.readFile(filePath, 'utf8', (err, data) => {
-			if (err) {
-                callback(err);
-			}
-			else {
-				this.xmlData = data;
+   // constructor
+   constructor() {
+      this.xmlData = null;
+      this.ptiPageArray = [];
+   }
 
-				var parser = new xmldom.DOMParser();
-				var dom = parser.parseFromString(this.xmlData);
-				var root = dom.documentElement;
+   parseXml(filePath, callback) {
+      fs.readFile(filePath, 'utf8', (err, data) => {
+         if (err) {
+            callback(err);
+         }
+         else {
+            this.xmlData = data;
 
-				var xmlFields = root.getElementsByTagName("field");
-				var fields = [];
+            var parser = new xmldom.DOMParser();
+            var dom = parser.parseFromString(this.xmlData);
+            var root = dom.documentElement;
 
-				for(var i=0;i<xmlFields.length;i++){
-					var id = xmlFields[i].getAttribute('id');
-					var xPos = xmlFields[i].getAttribute('x');
-					var yPos = xmlFields[i].getAttribute('y');
-					var width = xmlFields[i].getAttribute('width');
-					var height = xmlFields[i].getAttribute('height');
-					var type = xmlFields[i].getAttribute('xsi:type');
-					var page = xmlFields[i].getAttribute('page');
-					var fontName = xmlFields[i].getAttribute('fontName');
-					var fontSize = xmlFields[i].getAttribute('fontSize');
+            var xmlFields = root.getElementsByTagName("field");
+            var fields = [];
 
-					var item = {};
-					
-					var rectLeft = parseInt(xPos) - 21; //was 23.5
-					var rectTop = parseInt(yPos) - 20;//was 23
-					var rectRight = parseInt(rectLeft) + parseInt(width) - 4;
-					var rectBottom = parseInt(rectTop) + parseInt(height) - 4;
-					
-					item.fieldType="Tx";
-					if (type == "Boolean") {
-						item.fieldType="Btn";
-					}
-					else  if (type=="SSN" ||  type=="Phone" || type=="zip") {
-						item.TName = type.toLowerCase();
-					}
-					item.alternativeText = "";
-					item.fullName = id;
-					item.fontSize = fontSize;
-					item.subtype = "Widget";
+            for (var i = 0; i < xmlFields.length; i++) {
+               var id = xmlFields[i].getAttribute('id');
+               var xPos = xmlFields[i].getAttribute('x');
+               var yPos = xmlFields[i].getAttribute('y');
+               var width = xmlFields[i].getAttribute('width');
+               var height = xmlFields[i].getAttribute('height');
+               var type = xmlFields[i].getAttribute('xsi:type');
+               var page = xmlFields[i].getAttribute('page');
+               var fontName = xmlFields[i].getAttribute('fontName');
+               var fontSize = xmlFields[i].getAttribute('fontSize');
 
-					item.rect = [rectLeft, rectTop, rectRight, rectBottom];;
+               var item = {};
 
-					fields.push(item);
-					
-					this.ptiPageArray[parseInt(page)]=fields;
-				}
-				
-			}
-			callback();
-		});
-	}
+               var rectLeft = parseInt(xPos) - 21; //was 23.5
+               var rectTop = parseInt(yPos) - 20;//was 23
+               var rectRight = parseInt(rectLeft) + parseInt(width) - 4;
+               var rectBottom = parseInt(rectTop) + parseInt(height) - 4;
 
-	getFields(pageNum) {
-		return this.ptiPageArray[pageNum];
-	}
+               item.fieldType = "Tx";
+               if (type == "Boolean") {
+                  item.fieldType = "Btn";
+               }
+               else if (type == "SSN" || type == "Phone" || type == "zip") {
+                  item.TName = type.toLowerCase();
+               }
+               item.alternativeText = "";
+               item.fullName = id;
+               item.fontSize = fontSize;
+               item.subtype = "Widget";
+
+               item.rect = [rectLeft, rectTop, rectRight, rectBottom];;
+
+               fields.push(item);
+
+               this.ptiPageArray[parseInt(page)] = fields;
+            }
+
+         }
+         callback();
+      });
+   }
+
+   getFields(pageNum) {
+      return this.ptiPageArray[pageNum];
+   }
 }
 
 const __filename$2 = url.fileURLToPath((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('pdfparser.cjs', document.baseURI).href)));
@@ -2377,234 +2379,234 @@ class PDFJSClass extends events.EventEmitter {
 }
 
 class ParserStream extends stream.Transform {
-    static createContentStream(jsonObj) {
-		const rStream = new stream.Readable({objectMode: true});
-		rStream.push(jsonObj);
-		rStream.push(null);
-		return rStream;
-	}
+   static createContentStream(jsonObj) {
+      const rStream = new stream.Readable({ objectMode: true });
+      rStream.push(jsonObj);
+      rStream.push(null);
+      return rStream;
+   }
 
-    static createOutputStream(outputPath, resolve, reject) {
-		const outputStream = fs.createWriteStream(outputPath);
-		outputStream.on('finish', () => resolve(outputPath));
-		outputStream.on('error', err => reject(err) );
-		return outputStream;
-	}
+   static createOutputStream(outputPath, resolve, reject) {
+      const outputStream = fs.createWriteStream(outputPath);
+      outputStream.on('finish', () => resolve(outputPath));
+      outputStream.on('error', err => reject(err));
+      return outputStream;
+   }
 
-    #pdfParser = null;
-    #chunks = [];
-    #parsedData = {Pages:[]};
-    #_flush_callback = null; 
+   #pdfParser = null;
+   #chunks = [];
+   #parsedData = { Pages: [] };
+   #_flush_callback = null;
 
-    constructor(pdfParser, options) {
-        super(options);
-        this.#pdfParser = pdfParser;
+   constructor(pdfParser, options) {
+      super(options);
+      this.#pdfParser = pdfParser;
 
-        this.#chunks = [];
+      this.#chunks = [];
 
-        // this.#pdfParser.on("pdfParser_dataReady", evtData => {
-        //     this.push(evtData);
-        //     this.#_flush_callback();
-        //     this.emit('end', null);
-        // });
-        this.#pdfParser.on("readable", meta => this.#parsedData = {...meta, Pages:[]});
-        this.#pdfParser.on("data", page => {
-            if (!page) {
-                this.push(this.#parsedData);
-                this.#_flush_callback();
-            }
-            else 
-                this.#parsedData.Pages.push(page);
-        });
-    }
+      // this.#pdfParser.on("pdfParser_dataReady", evtData => {
+      //     this.push(evtData);
+      //     this.#_flush_callback();
+      //     this.emit('end', null);
+      // });
+      this.#pdfParser.on("readable", meta => this.#parsedData = { ...meta, Pages: [] });
+      this.#pdfParser.on("data", page => {
+         if (!page) {
+            this.push(this.#parsedData);
+            this.#_flush_callback();
+         }
+         else
+            this.#parsedData.Pages.push(page);
+      });
+   }
 
-    //implements transform stream
-	_transform(chunk, enc, callback) {
-		this.#chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc));
-		callback();
-	}
+   //implements transform stream
+   _transform(chunk, enc, callback) {
+      this.#chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk, enc));
+      callback();
+   }
 
-	_flush(callback) {
-        this.#_flush_callback = callback;
-		this.#pdfParser.parseBuffer(Buffer.concat(this.#chunks));
-	}
+   _flush(callback) {
+      this.#_flush_callback = callback;
+      this.#pdfParser.parseBuffer(Buffer.concat(this.#chunks));
+   }
 
-    _destroy() {
-        super.removeAllListeners();
-        this.#pdfParser = null;
-        this.#chunks = [];         
-    }
-} 
+   _destroy() {
+      super.removeAllListeners();
+      this.#pdfParser = null;
+      this.#chunks = [];
+   }
+}
 
 
 class StringifyStream extends stream.Transform {
-    constructor(options) {
-        super(options);
+   constructor(options) {
+      super(options);
 
-        this._readableState.objectMode = false;
-        this._writableState.objectMode = true;    
-    }
+      this._readableState.objectMode = false;
+      this._writableState.objectMode = true;
+   }
 
-    _transform(obj, encoding, callback){
-        this.push(JSON.stringify(obj));
-        callback();
-    }
+   _transform(obj, encoding, callback) {
+      this.push(JSON.stringify(obj));
+      callback();
+   }
 }
 
 class PDFParser extends events.EventEmitter { // inherit from event emitter
-    //public static
-    static get colorDict() {return kColors; }
-    static get fontFaceDict() { return kFontFaces; }
-    static get fontStyleDict() { return kFontStyles; }
+   //public static
+   static get colorDict() { return kColors; }
+   static get fontFaceDict() { return kFontFaces; }
+   static get fontStyleDict() { return kFontStyles; }
 
-    //private static    
-    static #maxBinBufferCount = 10;
-    static #binBuffer = {};
+   //private static    
+   static #maxBinBufferCount = 10;
+   static #binBuffer = {};
 
-    //private 
-    #password = "";
+   //private 
+   #password = "";
 
-    #context = null; // service context object, only used in Web Service project; null in command line
-    
-    #pdfFilePath = null; //current PDF file to load and parse, null means loading/parsing not started
-    #pdfFileMTime = null; // last time the current pdf was modified, used to recognize changes and ignore cache
-    #data = null; //if file read success, data is PDF content; if failed, data is "err" object
-    #PDFJS = null; //will be initialized in constructor
-    #processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
+   #context = null; // service context object, only used in Web Service project; null in command line
 
-    // constructor
-    constructor(context, needRawText, password) {
-        //call constructor for super class
-        super();
-    
-        // private
-        // service context object, only used in Web Service project; null in command line
-        this.#context = context;
+   #pdfFilePath = null; //current PDF file to load and parse, null means loading/parsing not started
+   #pdfFileMTime = null; // last time the current pdf was modified, used to recognize changes and ignore cache
+   #data = null; //if file read success, data is PDF content; if failed, data is "err" object
+   #PDFJS = null; //will be initialized in constructor
+   #processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
 
-        this.#pdfFilePath = null; //current PDF file to load and parse, null means loading/parsing not started
-        this.#pdfFileMTime = null; // last time the current pdf was modified, used to recognize changes and ignore cache
-        this.#data = null; //if file read success, data is PDF content; if failed, data is "err" object
-        this.#processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
+   // constructor
+   constructor(context, needRawText, password) {
+      //call constructor for super class
+      super();
 
-        this.#PDFJS = new PDFJSClass(needRawText);
-        this.#password = password;
-    } 
-    
-	//private methods, needs to invoked by [funcName].call(this, ...)
-	#onPDFJSParseDataReady(data) {
-		if (!data) { //v1.1.2: data===null means end of parsed data
-			nodeUtil.p2jinfo("PDF parsing completed.");
-			this.emit("pdfParser_dataReady", this.#data);
-		}
-		else {
-			this.#data = {...this.#data, ...data};            
-		}
-	}
+      // private
+      // service context object, only used in Web Service project; null in command line
+      this.#context = context;
 
-	#onPDFJSParserDataError(err) {
-		this.#data = null;
-		this.emit("pdfParser_dataError", {"parserError": err});
-        // this.emit("error", err);
-	}
+      this.#pdfFilePath = null; //current PDF file to load and parse, null means loading/parsing not started
+      this.#pdfFileMTime = null; // last time the current pdf was modified, used to recognize changes and ignore cache
+      this.#data = null; //if file read success, data is PDF content; if failed, data is "err" object
+      this.#processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
 
-	#startParsingPDF(buffer) {
-		this.#data = {};
+      this.#PDFJS = new PDFJSClass(needRawText);
+      this.#password = password;
+   }
 
-		this.#PDFJS.on("pdfjs_parseDataReady", data => this.#onPDFJSParseDataReady(data));
-		this.#PDFJS.on("pdfjs_parseDataError", err => this.#onPDFJSParserDataError(err));
+   //private methods, needs to invoked by [funcName].call(this, ...)
+   #onPDFJSParseDataReady(data) {
+      if (!data) { //v1.1.2: data===null means end of parsed data
+         nodeUtil.p2jinfo("PDF parsing completed.");
+         this.emit("pdfParser_dataReady", this.#data);
+      }
+      else {
+         this.#data = { ...this.#data, ...data };
+      }
+   }
 
-        //v1.3.0 the following Readable Stream-like events are replacement for the top two custom events
-        this.#PDFJS.on("readable", meta => this.emit("readable", meta));
-        this.#PDFJS.on("data", data => this.emit("data", data));
-        this.#PDFJS.on("error", err => this.#onPDFJSParserDataError(err));    
+   #onPDFJSParserDataError(err) {
+      this.#data = null;
+      this.emit("pdfParser_dataError", { "parserError": err });
+      // this.emit("error", err);
+   }
 
-		this.#PDFJS.parsePDFData(buffer || PDFParser.#binBuffer[this.binBufferKey], this.#password);
-	}
+   #startParsingPDF(buffer) {
+      this.#data = {};
 
-	#processBinaryCache() {
-		if (this.binBufferKey in PDFParser.#binBuffer) {
-			this.#startParsingPDF();
-			return true;
-		}
+      this.#PDFJS.on("pdfjs_parseDataReady", data => this.#onPDFJSParseDataReady(data));
+      this.#PDFJS.on("pdfjs_parseDataError", err => this.#onPDFJSParserDataError(err));
 
-		const allKeys = Object.keys(PDFParser.#binBuffer);
-		if (allKeys.length > PDFParser.#maxBinBufferCount) {
-			const idx = this.id % PDFParser.#maxBinBufferCount;
-			const key = allKeys[idx];
-			PDFParser.#binBuffer[key] = null;
-			delete PDFParser.#binBuffer[key];
+      //v1.3.0 the following Readable Stream-like events are replacement for the top two custom events
+      this.#PDFJS.on("readable", meta => this.emit("readable", meta));
+      this.#PDFJS.on("data", data => this.emit("data", data));
+      this.#PDFJS.on("error", err => this.#onPDFJSParserDataError(err));
 
-			nodeUtil.p2jinfo("re-cycled cache for " + key);
-		}
+      this.#PDFJS.parsePDFData(buffer || PDFParser.#binBuffer[this.binBufferKey], this.#password);
+   }
 
-		return false;
-	}
+   #processBinaryCache() {
+      if (this.binBufferKey in PDFParser.#binBuffer) {
+         this.#startParsingPDF();
+         return true;
+      }
 
-    //public getter
-    get data() { return this.#data; }
-    get binBufferKey() { return this.#pdfFilePath + this.#pdfFileMTime; }
-        
-    //public APIs
-    createParserStream() {
-        return new ParserStream(this, {objectMode: true, bufferSize: 64 * 1024});
-    }
+      const allKeys = Object.keys(PDFParser.#binBuffer);
+      if (allKeys.length > PDFParser.#maxBinBufferCount) {
+         const idx = this.id % PDFParser.#maxBinBufferCount;
+         const key = allKeys[idx];
+         PDFParser.#binBuffer[key] = null;
+         delete PDFParser.#binBuffer[key];
 
-	async loadPDF(pdfFilePath, verbosity) {
-		nodeUtil.verbosity(verbosity || 0);
-		nodeUtil.p2jinfo("about to load PDF file " + pdfFilePath);
+         nodeUtil.p2jinfo("re-cycled cache for " + key);
+      }
 
-		this.#pdfFilePath = pdfFilePath;
+      return false;
+   }
 
-		try {
-            this.#pdfFileMTime = fs.statSync(pdfFilePath).mtimeMs;
-            if (this.#processFieldInfoXML) {
-                this.#PDFJS.tryLoadFieldInfoXML(pdfFilePath);
-            }
+   //public getter
+   get data() { return this.#data; }
+   get binBufferKey() { return this.#pdfFilePath + this.#pdfFileMTime; }
 
-            if (this.#processBinaryCache())
-                return;
-        
-            PDFParser.#binBuffer[this.binBufferKey] = await promises.readFile(pdfFilePath);
-            nodeUtil.p2jinfo(`Load OK: ${pdfFilePath}`);
-            this.#startParsingPDF();
-        }
-        catch(err) {
-            nodeUtil.p2jerror(`Load Failed: ${pdfFilePath} - ${err}`);
-            this.emit("pdfParser_dataError", err);
-        }
-	}
+   //public APIs
+   createParserStream() {
+      return new ParserStream(this, { objectMode: true, bufferSize: 64 * 1024 });
+   }
 
-	// Introduce a way to directly process buffers without the need to write it to a temporary file
-	parseBuffer(pdfBuffer) {
-		this.#startParsingPDF(pdfBuffer);
-	}
+   async loadPDF(pdfFilePath, verbosity) {
+      nodeUtil.verbosity(verbosity || 0);
+      nodeUtil.p2jinfo("about to load PDF file " + pdfFilePath);
 
-	getRawTextContent() { return this.#PDFJS.getRawTextContent(); }
-	getRawTextContentStream() { return ParserStream.createContentStream(this.getRawTextContent()); }
+      this.#pdfFilePath = pdfFilePath;
 
-	getAllFieldsTypes() { return this.#PDFJS.getAllFieldsTypes(); };
-	getAllFieldsTypesStream() { return ParserStream.createContentStream(this.getAllFieldsTypes()); }
+      try {
+         this.#pdfFileMTime = fs.statSync(pdfFilePath).mtimeMs;
+         if (this.#processFieldInfoXML) {
+            this.#PDFJS.tryLoadFieldInfoXML(pdfFilePath);
+         }
 
-	getMergedTextBlocksIfNeeded() { return this.#PDFJS.getMergedTextBlocksIfNeeded(); }
-	getMergedTextBlocksStream() { return ParserStream.createContentStream(this.getMergedTextBlocksIfNeeded()) }
+         if (this.#processBinaryCache())
+            return;
 
-	destroy() { // invoked with stream transform process		
-        super.removeAllListeners();
+         PDFParser.#binBuffer[this.binBufferKey] = await promises.readFile(pdfFilePath);
+         nodeUtil.p2jinfo(`Load OK: ${pdfFilePath}`);
+         this.#startParsingPDF();
+      }
+      catch (err) {
+         nodeUtil.p2jerror(`Load Failed: ${pdfFilePath} - ${err}`);
+         this.emit("pdfParser_dataError", err);
+      }
+   }
 
-		//context object will be set in Web Service project, but not in command line utility
-		if (this.#context) {
-			this.#context.destroy();
-			this.#context = null;
-		}
+   // Introduce a way to directly process buffers without the need to write it to a temporary file
+   parseBuffer(pdfBuffer) {
+      this.#startParsingPDF(pdfBuffer);
+   }
 
-		this.#pdfFilePath = null;
-		this.#pdfFileMTime = null;
-		this.#data = null;
-        this.#processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
+   getRawTextContent() { return this.#PDFJS.getRawTextContent(); }
+   getRawTextContentStream() { return ParserStream.createContentStream(this.getRawTextContent()); }
 
-        this.#PDFJS.destroy();
-        this.#PDFJS = null;
-	}
+   getAllFieldsTypes() { return this.#PDFJS.getAllFieldsTypes(); };
+   getAllFieldsTypesStream() { return ParserStream.createContentStream(this.getAllFieldsTypes()); }
+
+   getMergedTextBlocksIfNeeded() { return this.#PDFJS.getMergedTextBlocksIfNeeded(); }
+   getMergedTextBlocksStream() { return ParserStream.createContentStream(this.getMergedTextBlocksIfNeeded()) }
+
+   destroy() { // invoked with stream transform process		
+      super.removeAllListeners();
+
+      //context object will be set in Web Service project, but not in command line utility
+      if (this.#context) {
+         this.#context.destroy();
+         this.#context = null;
+      }
+
+      this.#pdfFilePath = null;
+      this.#pdfFileMTime = null;
+      this.#data = null;
+      this.#processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
+
+      this.#PDFJS.destroy();
+      this.#PDFJS = null;
+   }
 }
 
 module.exports = PDFParser;

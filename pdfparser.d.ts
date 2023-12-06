@@ -1,10 +1,10 @@
-import {EventEmitter} from "events";
+import { EventEmitter } from "events";
 
-declare class Pdfparser extends EventEmitter{
+declare class Pdfparser extends EventEmitter {
     constructor(context?: any, needRawText?: number, password?: string);
     parseBuffer(buffer: Buffer, verbosity?: number): void;
-    loadPDF(pdfFilePath: string, verbosity?: number):Promise<void>
-    createParserStream():ParserStream
+    loadPDF(pdfFilePath: string, verbosity?: number): Promise<void>
+    createParserStream(): ParserStream
     on<K extends keyof EventMap>(eventName: K, listener: EventMap[K]): this
 }
 
@@ -12,21 +12,21 @@ export type EventMap = {
     "pdfParser_dataError": (errMsg: string) => void;
     "pdfParser_dataReady": (pdfData: Output) => void;
     "readable": (meta: Output["Meta"]) => void;
-    "data": (data: Output["Pages"][number]|null) => void;
+    "data": (data: Output["Pages"][number] | null) => void;
 }
 
-declare class ParserStream{
+declare class ParserStream {
     //TODO
 }
 
 
-export interface Output{
+export interface Output {
     Transcoder: string,
     Meta: Record<string, any>
     Pages: Page[]
 }
 
-export declare interface Page{
+export declare interface Page {
     Width: number,
     Height: number,
     HLines: Line[],
@@ -51,7 +51,7 @@ export declare interface Line {
     y: number,
     w: number,
     oc?: string,
-    clr?:number
+    clr?: number
 }
 
 export declare interface Text {
@@ -61,20 +61,20 @@ export declare interface Text {
     sw: number,
     A: 'left' | 'center' | 'right',
     R: TextRun[]
-    oc?:string;
+    oc?: string;
     clr?: number;
 }
 
 export declare interface TextRun {
     T: string,
     S: number,
-    TS: [number, number, 0|1, 0|1]
+    TS: [number, number, 0 | 1, 0 | 1]
     RA?: number
 }
 
 export declare interface Boxset {
     boxes: Box[],
-    id : {
+    id: {
         Id: string,
         EN?: number
     }
@@ -109,13 +109,13 @@ export declare interface Box {
 }
 
 export declare interface Box {
-    id : {
-        Id : string,
-        EN? : number
+    id: {
+        Id: string,
+        EN?: number
     }
     T: {
-        Name : string,
-        TypeInfo? : {}
+        Name: string,
+        TypeInfo?: {}
     }
     x: number,
     y: number,

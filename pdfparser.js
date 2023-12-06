@@ -4,8 +4,8 @@ import { readFile } from "fs/promises";
 import { EventEmitter } from "events";
 
 import PDFJS from "./lib/pdf.js";
-import {ParserStream} from "./lib/parserstream.js";
-import {kColors, kFontFaces, kFontStyles} from "./lib/pdfconst.js";
+import { ParserStream } from "./lib/parserstream.js";
+import { kColors, kFontFaces, kFontStyles } from "./lib/pdfconst.js";
 
 /**
  * Class representing a PDF Parser.
@@ -46,7 +46,7 @@ export default class PDFParser extends EventEmitter {
      * @param {object} context - The context object (only used in Web Service project); null in command line
      * @param {boolean} needRawText - Whether raw text is needed or not
      * @param {string} password - The password for PDF file
-	 * @info Private methods accessible using the [funcName].call(this, ...) syntax
+     * @info Private methods accessible using the [funcName].call(this, ...) syntax
      */
     constructor(context, needRawText, password) {
         super();
@@ -95,33 +95,33 @@ export default class PDFParser extends EventEmitter {
         //v1.3.0 the following Readable Stream-like events are replacement for the top two custom events
         this.#PDFJS.on("readable", meta => this.emit("readable", meta));
         this.#PDFJS.on("data", data => this.emit("data", data));
-        this.#PDFJS.on("error", err => this.#onPDFJSParserDataError(err));    
-        
+        this.#PDFJS.on("error", err => this.#onPDFJSParserDataError(err));
+
         this.#PDFJS.parsePDFData(buffer || PDFParser.#binBuffer[this.binBufferKey], this.#password);
     }
 
-	/**
+    /**
      * @private
      * @returns {boolean}
      */
     #processBinaryCache() {
-		if (this.binBufferKey in PDFParser.#binBuffer) {
-			this.#startParsingPDF();
-			return true;
-		}
-		
-		const allKeys = Object.keys(PDFParser.#binBuffer);	
-		if (allKeys.length > PDFParser.#maxBinBufferCount) {	
-			const idx = this.id % PDFParser.#maxBinBufferCount;	
-			const key = allKeys[idx];	
-			PDFParser.#binBuffer[key] = null;	
-			delete PDFParser.#binBuffer[key];	
+        if (this.binBufferKey in PDFParser.#binBuffer) {
+            this.#startParsingPDF();
+            return true;
+        }
 
-			nodeUtil.p2jinfo("re-cycled cache for " + key);	
-		}	
+        const allKeys = Object.keys(PDFParser.#binBuffer);
+        if (allKeys.length > PDFParser.#maxBinBufferCount) {
+            const idx = this.id % PDFParser.#maxBinBufferCount;
+            const key = allKeys[idx];
+            PDFParser.#binBuffer[key] = null;
+            delete PDFParser.#binBuffer[key];
 
-		return false;
-	}
+            nodeUtil.p2jinfo("re-cycled cache for " + key);
+        }
+
+        return false;
+    }
 
     /**
      * Getter for #data
@@ -143,18 +143,18 @@ export default class PDFParser extends EventEmitter {
         return new ParserStream(this, { objectMode: true, bufferSize: 64 * 1024 });
     }
 
-	/**
+    /**
      * Asynchronously load a PDF from a file path.
      * @param {string} pdfFilePath - Path of the PDF file
      * @param {number} verbosity - Verbosity level
      */
-	async loadPDF(pdfFilePath, verbosity) {
-		nodeUtil.verbosity(verbosity || 0);
-		nodeUtil.p2jinfo("about to load PDF file " + pdfFilePath);
+    async loadPDF(pdfFilePath, verbosity) {
+        nodeUtil.verbosity(verbosity || 0);
+        nodeUtil.p2jinfo("about to load PDF file " + pdfFilePath);
 
-		this.#pdfFilePath = pdfFilePath;
+        this.#pdfFilePath = pdfFilePath;
 
-		try {
+        try {
             this.#pdfFileMTime = fs.statSync(pdfFilePath).mtimeMs;
             if (this.#processFieldInfoXML) {
                 this.#PDFJS.tryLoadFieldInfoXML(pdfFilePath);
@@ -162,26 +162,26 @@ export default class PDFParser extends EventEmitter {
 
             if (this.#processBinaryCache())
                 return;
-        
+
             PDFParser.#binBuffer[this.binBufferKey] = await readFile(pdfFilePath);
             nodeUtil.p2jinfo(`Load OK: ${pdfFilePath}`);
             this.#startParsingPDF();
         }
-        catch(err) {
+        catch (err) {
             nodeUtil.p2jerror(`Load Failed: ${pdfFilePath} - ${err}`);
             this.emit("pdfParser_dataError", err);
         }
-	}
+    }
 
     /**
      * Parse PDF buffer. Introduce a way to directly process buffers without the need to write it to a temporary file
      * @param {Buffer} pdfBuffer - PDF buffer
      * @param {number} verbosity - Verbosity level
      */
-	parseBuffer(pdfBuffer, verbosity) {
-		nodeUtil.verbosity(verbosity || 0);
-		this.#startParsingPDF(pdfBuffer);
-	}
+    parseBuffer(pdfBuffer, verbosity) {
+        nodeUtil.verbosity(verbosity || 0);
+        this.#startParsingPDF(pdfBuffer);
+    }
 
     /**
      * Retrieve raw text content from PDF.
@@ -222,21 +222,21 @@ export default class PDFParser extends EventEmitter {
     /**
      * Destroy the PDFParser instance.
      */
-	destroy() { // invoked with stream transform process		
+    destroy() { // invoked with stream transform process		
         super.removeAllListeners();
 
-		//context object will be set in Web Service project, but not in command line utility
-		if (this.#context) {
-			this.#context.destroy();
-			this.#context = null;
-		}
+        //context object will be set in Web Service project, but not in command line utility
+        if (this.#context) {
+            this.#context.destroy();
+            this.#context = null;
+        }
 
-		this.#pdfFilePath = null;
-		this.#pdfFileMTime = null;
-		this.#data = null;
+        this.#pdfFilePath = null;
+        this.#pdfFileMTime = null;
+        this.#data = null;
         this.#processFieldInfoXML = false;//disable additional _fieldInfo.xml parsing and merging (do NOT set to true)
 
         this.#PDFJS.destroy();
         this.#PDFJS = null;
-	}
+    }
 }
