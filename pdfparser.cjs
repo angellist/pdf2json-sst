@@ -1912,7 +1912,8 @@ class PTIXmlParser {
 const __filename$2 = url.fileURLToPath((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('pdfparser.cjs', document.baseURI).href)));
 const __dirname$2 = path.dirname(__filename$2);
 
-const _PARSER_SIG = `PARSER_SIG`;
+const pkInfo = JSON.parse(fs.readFileSync(`${__dirname$2}/package.json`, 'utf8'));
+const _PARSER_SIG = `${pkInfo.name}@${pkInfo.version} [${pkInfo.homepage}]`;
 
 const __filename$1 = url.fileURLToPath((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.src || new URL('pdfparser.cjs', document.baseURI).href)));
 const __dirname$1 = path.dirname(__filename$1);
@@ -1960,6 +1961,19 @@ function createScratchCanvas(width, height) {
 const PDFJS = {};
 var Image = PDFImage
 const globalScope = { console };
+
+const baseDir = `${__dirname}/../base/`;
+
+try {
+   const _baseCode = _pdfjsFiles.reduce(
+      (preContent, fileName) =>
+         (preContent += fs.readFileSync(path.join(baseDir, fileName), 'utf8')),
+      ''
+   );
+   eval(_baseCode);
+} catch (error) {
+   console.error('Error loading base PDF.js files:', error);
+}
 
 ////////////////////////////////start of helper classes
 class PDFPageParser {
